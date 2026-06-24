@@ -1,7 +1,7 @@
 using Gee;
 using NaturalCollate;
 
-public class Folio.LocalNotebook : Object, ListModel, NoteContainer, Notebook {
+public class Codex.LocalNotebook : Object, ListModel, NoteContainer, Notebook {
 
 	public string name { get { return info.name; } }
 

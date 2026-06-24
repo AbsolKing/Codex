@@ -1,6 +1,6 @@
 
-[GtkTemplate (ui = "/com/toolstack/Folio/toolbar.ui")]
-public class Folio.Toolbar : Gtk.Box {
+[GtkTemplate (ui = "/com/absolking/Codex/toolbar.ui")]
+public class Codex.Toolbar : Gtk.Box {
 
 	public bool compacted {
 		get { return small_toolbar.visible; }

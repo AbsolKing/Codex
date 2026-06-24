@@ -1,6 +1,6 @@
 
-[GtkTemplate (ui = "/com/toolstack/Folio/preferences.ui")]
-public class Folio.PreferencesWindow : Adw.PreferencesDialog {
+[GtkTemplate (ui = "/com/absolking/Codex/preferences.ui")]
+public class Codex.PreferencesWindow : Adw.PreferencesDialog {
 	~PreferencesWindow () {
 		debug ("Destroying PreferencesWindow");
 	}
@@ -56,7 +56,7 @@ public class Folio.PreferencesWindow : Adw.PreferencesDialog {
 
 		var font_dialog_monospace = new Gtk.FontDialog ();
 		var font_desc_monospace = Pango.FontDescription.from_string (settings.get_string ("note-font-monospace"));
-		var monospace_filter = new Folio.MonospaceFilter ();
+		var monospace_filter = new Codex.MonospaceFilter ();
 		font_dialog_monospace.set_filter (monospace_filter);
 		font_dialog_monospace.set_title (Strings.PICK_CODE_FONT);
 		font_button_monospace.set_font_desc (font_desc_monospace);
@@ -182,7 +182,7 @@ public class Folio.PreferencesWindow : Adw.PreferencesDialog {
 		notebook_sort_order.set_selected ((int)selected_sort_order);
         notebook_sort_order.notify["selected-item"].connect (on_notebook_sort_order_selected_item);
 
- 		this.three_pane_changed.connect (((Folio.Window) window).on_3_pane_change);
+ 		this.three_pane_changed.connect (((Codex.Window) window).on_3_pane_change);
 	}
 
 	private void on_update_font_btn_desc () {
@@ -252,9 +252,9 @@ public class Folio.PreferencesWindow : Adw.PreferencesDialog {
 		autosave_interval.set_sensitive (state);
 
 		if (state == false) {
-			((Folio.Window) window).disable_autosave ();
+			((Codex.Window) window).disable_autosave ();
 		} else {
-			((Folio.Window) window).enable_autosave ();
+			((Codex.Window) window).enable_autosave ();
 		}
 
 		return false;
@@ -350,7 +350,7 @@ public class Folio.PreferencesWindow : Adw.PreferencesDialog {
 	}
 }
 
-public class Folio.MonospaceFilter : Gtk.Filter {
+public class Codex.MonospaceFilter : Gtk.Filter {
 	public override bool match (GLib.Object? item) {
 		var font = item as Pango.FontFace;
 		var family = font.get_family ();

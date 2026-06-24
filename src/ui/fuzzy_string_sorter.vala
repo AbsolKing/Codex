@@ -1,5 +1,5 @@
 
-public class Folio.FuzzyStringSorter : Gtk.Sorter {
+public class Codex.FuzzyStringSorter : Gtk.Sorter {
 
     public FuzzyStringSorter (Gtk.Expression expression) {
         this._expression = expression;

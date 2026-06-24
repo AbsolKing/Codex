@@ -3,7 +3,7 @@
 public class SearchProvider : Object {
 
 	Settings settings = new Settings (Config.APP_ID);
-	Folio.Provider notebook_provider = new Folio.Provider ();
+	Codex.Provider notebook_provider = new Codex.Provider ();
 
 	public SearchProvider () {
 		settings.changed["notes-dir"].connect (on_settings_notes_dir_change);
@@ -17,7 +17,7 @@ public class SearchProvider : Object {
 		} catch (Error e) {}
 	}
 
-	private HashTable<string, Folio.Note> notes;
+	private HashTable<string, Codex.Note> notes;
 
 	struct ResultWithDistance {
 		string result;
@@ -41,7 +41,7 @@ public class SearchProvider : Object {
 
 	public void update_notes () throws Error {
 		var notebooks = notebook_provider.notebooks;
-		notes = new HashTable<string, Folio.Note> (str_hash, str_equal);
+		notes = new HashTable<string, Codex.Note> (str_hash, str_equal);
 		foreach (var notebook in notebooks) {
 			notebook.load ();
 			foreach (var note in notebook.loaded_notes) {
@@ -84,14 +84,14 @@ public class SearchProvider : Object {
 
 	public void launch_search (string[] terms, uint32 timestamp) throws Error {
 		Process.spawn_command_line_async (
-			"com.toolstack.Folio --launch-search " + Shell.quote (string.joinv (" ", terms))
+			"com.absolking.Codex --launch-search " + Shell.quote (string.joinv (" ", terms))
 		);
 	}
 
 	public void activate_result (string result_id, string[] terms, uint32 timestamp) throws Error {
 		var note = notes[result_id];
 		Process.spawn_command_line_async (
-			"com.toolstack.Folio --open-note " + Shell.quote (note.id)
+			"com.absolking.Codex --open-note " + Shell.quote (note.id)
 		);
 	}
 }
@@ -99,7 +99,7 @@ public class SearchProvider : Object {
 public class SearchProviderApp : Application {
 	public SearchProviderApp () {
 		Object (
-			application_id: "com.toolstack.Folio.SearchProvider",
+			application_id: "com.absolking.Codex.SearchProvider",
 			flags: ApplicationFlags.IS_SERVICE
 		);
 	}

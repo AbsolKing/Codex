@@ -1,6 +1,6 @@
 
-[GtkTemplate (ui = "/com/toolstack/Folio/notebooks_bar/icon.ui")]
-public class Folio.NotebookIcon : Gtk.Box {
+[GtkTemplate (ui = "/com/absolking/Codex/notebooks_bar/icon.ui")]
+public class Codex.NotebookIcon : Gtk.Box {
 
 	construct {
 		accessible_role = Gtk.AccessibleRole.LABEL;

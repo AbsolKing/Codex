@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-[GtkTemplate (ui = "/com/toolstack/Folio/window.ui")]
-public class Folio.Window : Adw.ApplicationWindow {
+[GtkTemplate (ui = "/com/absolking/Codex/window.ui")]
+public class Codex.Window : Adw.ApplicationWindow {
 
 	public bool cheatsheet_enabled { get; set; }
 	public bool show_line_numbers { get; set; }
@@ -115,7 +115,7 @@ public class Folio.Window : Adw.ApplicationWindow {
 
 		close_request.connect (on_close_request);
 
-		Gtk.IconTheme.get_for_display (display).add_resource_path ("/com/toolstack/Folio/graphics/");
+		Gtk.IconTheme.get_for_display (display).add_resource_path ("/com/absolking/Codex/graphics/");
 
 		set_text_view_state (TextViewState.NO_NOTEBOOK);
 
@@ -136,7 +136,7 @@ public class Folio.Window : Adw.ApplicationWindow {
 	public Window (Application app) {
 		Object (
 			application: app,
-			title: "Folio",
+			title: "Codex",
 			icon_name: Config.APP_ID
 		);
 

@@ -1,5 +1,5 @@
 project(
-  'com.toolstack.Folio',
+  'com.absolking.Codex',
   ['c', 'vala'],
   version: '26.01',
   meson_version: '>= 0.59.4',

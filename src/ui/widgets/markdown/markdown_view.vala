@@ -158,8 +158,8 @@ public class GtkMarkdown.View : GtkSource.View {
 
 		// We need to set the is_unsaved flag in the window model so that if the user doesn't do anything
 		// else, the note can still be saved properly.
-		var window = (Folio.Window)get_ancestor (typeof (Folio.Window));
-		var app = (Folio.Application)window.get_application ();
+		var window = (Codex.Window)get_ancestor (typeof (Codex.Window));
+		var app = (Codex.Application)window.get_application ();
 		var window_model = app.window_model;
 		window_model.is_unsaved = true;
 

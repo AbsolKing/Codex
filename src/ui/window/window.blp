@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $FolioWindow: Adw.ApplicationWindow {
+template $CodexWindow: Adw.ApplicationWindow {
   styles [
     "transparent"
   ]
@@ -34,7 +34,7 @@ template $FolioWindow: Adw.ApplicationWindow {
 
             child: Adw.ToolbarView {
               content: Box {
-                $FolioNotebooksBar notebooks_bar {}
+                $CodexNotebooksBar notebooks_bar {}
 
                 Box {
                   width-request: 225;
@@ -111,7 +111,7 @@ template $FolioWindow: Adw.ApplicationWindow {
             ]
 
             [overlay]
-            $FolioEditView edit_view {
+            $CodexEditView edit_view {
               hexpand: true;
               vexpand: true;
             }

@@ -1,9 +1,9 @@
 {
-    "app-id" : "com.toolstack.Folio",
+    "app-id" : "com.absolking.Codex",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "50",
     "sdk" : "org.gnome.Sdk",
-    "command" : "com.toolstack.Folio",
+    "command" : "com.absolking.Codex",
     "finish-args" : [
         "--share=ipc",
         "--socket=fallback-x11",

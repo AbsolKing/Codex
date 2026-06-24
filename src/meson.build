@@ -47,7 +47,7 @@ subdir('ui')
 generated_resources_dir = meson.current_build_dir()
 
 folio_sources += gnome.compile_resources('folio-resources',
-  'folio.gresource.xml',
+  'codex.gresource.xml',
   dependencies: blueprints,
   source_dir: ['src', generated_resources_dir],
   c_name: 'folio'
@@ -86,7 +86,7 @@ executable(
   folio_sources,
   c_args: [
 	'-DGETTEXT_PACKAGE="' + app_id + '"',
-  '-DG_LOG_DOMAIN="Folio"'
+  '-DG_LOG_DOMAIN="Codex"'
   ],
   vala_args: [
 	meson.project_source_root() + '/src/config.vapi',

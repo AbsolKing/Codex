@@ -1,6 +1,6 @@
 
-[GtkTemplate (ui = "/com/toolstack/Folio/notebooks_bar.ui")]
-public class Folio.NotebooksBar : Gtk.Box {
+[GtkTemplate (ui = "/com/absolking/Codex/notebooks_bar.ui")]
+public class Codex.NotebooksBar : Gtk.Box {
 
 	public bool paned { get; set; default = false; }
 

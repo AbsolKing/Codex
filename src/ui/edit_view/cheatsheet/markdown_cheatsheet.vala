@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-[GtkTemplate (ui = "/com/toolstack/Folio/markdown_cheatsheet.ui")]
-public class Folio.MarkdownCheatsheet : Adw.Dialog {
+[GtkTemplate (ui = "/com/absolking/Codex/markdown_cheatsheet.ui")]
+public class Codex.MarkdownCheatsheet : Adw.Dialog {
 
 	[GtkChild]
 	unowned GtkMarkdown.View text_view;
@@ -34,7 +34,7 @@ public class Folio.MarkdownCheatsheet : Adw.Dialog {
 		try {
 			var buffer = new GtkMarkdown.Buffer ();
 			buffer.text = (string) resources_lookup_data (
-				"/com/toolstack/Folio/markdown_cheatsheet.md",
+				"/com/absolking/Codex/markdown_cheatsheet.md",
 				ResourceLookupFlags.NONE
 			).get_data ();
 			text_view.buffer = buffer;

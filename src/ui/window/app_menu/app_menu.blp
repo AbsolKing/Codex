@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $FolioAppMenu : Adw.Bin {
+template $CodexAppMenu : Adw.Bin {
   MenuButton {
     hexpand: false;
     vexpand: false;
@@ -41,7 +41,7 @@ menu primary_menu {
       action: "win.show-help-overlay";
     }
     item {
-      label: _("_About Folio");
+      label: _("_About Codex");
       action: "app.about";
     }
   }

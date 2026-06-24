@@ -1,6 +1,6 @@
 using Gee;
 
-public class Folio.Trash : Object, ListModel, NoteContainer {
+public class Codex.Trash : Object, ListModel, NoteContainer {
 
 	public string name {
 		get { return _name; }

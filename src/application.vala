@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Folio.Application : Adw.Application {
+public class Codex.Application : Adw.Application {
 
 	private ActionEntry[] APP_ACTIONS = {
 		{ "new-note", on_new_note },
@@ -188,8 +188,8 @@ public class Folio.Application : Adw.Application {
 	private void on_about_action () {
 		var about = new Adw.AboutDialog ();
 		about.application_icon = Config.APP_ID;
-		about.application_name = "Folio";
-		about.developers = {"Greg Ross <greg@toolstack.com>", "Zagura"};
+		about.application_name = "Codex";
+		about.developers = {"Greg Ross <greg@absolking.com>", "Zagura"};
 		about.translator_credits = """
 Albano Battistella
 Amereyeu
@@ -220,10 +220,10 @@ Zagura
 Sunniva Løvstad
 """;
 		about.translator_credits = about.translator_credits.chomp ().chug ();
-		about.issue_url = "https://github.com/toolstack/Folio/issues";
+		about.issue_url = "https://github.com/absolking/Codex/issues";
 		about.license_type = Gtk.License.GPL_3_0;
 		about.version = Config.VERSION;
-		about.website = "https://github.com/toolstack/Folio";
+		about.website = "https://github.com/absolking/Codex";
 		about.set_release_notes ("""
         <p>Changes:</p>
         <ul>

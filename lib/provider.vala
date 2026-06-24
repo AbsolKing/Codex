@@ -1,7 +1,7 @@
 using Gee;
 using NaturalCollate;
 
-public errordomain Folio.ProviderError {
+public errordomain Codex.ProviderError {
 	ALREADY_EXISTS,
 	COULDNT_CREATE_FILE,
 	NOTES_HAVENT_LOADED,
@@ -9,7 +9,7 @@ public errordomain Folio.ProviderError {
 	COULDNT_MOVE,
 }
 
-public class Folio.Provider : Object, ListModel {
+public class Codex.Provider : Object, ListModel {
 
 	public Gee.List<Note> get_all_notes () {
 		var notes = new ArrayList<Note> ();

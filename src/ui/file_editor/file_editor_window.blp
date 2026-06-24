@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $FolioFileEditorWindow : Adw.ApplicationWindow {
+template $CodexFileEditorWindow : Adw.ApplicationWindow {
   default-width: 720;
   default-height: 512;
 
@@ -15,7 +15,7 @@ template $FolioFileEditorWindow : Adw.ApplicationWindow {
 
       styles ["text-area"]
 
-      $FolioEditView edit_view {
+      $CodexEditView edit_view {
         hexpand: true;
         vexpand: true;
         width-request: 390;
@@ -57,7 +57,7 @@ template $FolioFileEditorWindow : Adw.ApplicationWindow {
         }
 
         [end]
-        $FolioAppMenu {}
+        $CodexAppMenu {}
       }
     }
   }

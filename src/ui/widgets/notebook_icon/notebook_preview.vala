@@ -1,6 +1,6 @@
 
-[GtkTemplate (ui = "/com/toolstack/Folio/notebook_preview.ui")]
-public class Folio.NotebookPreview : Gtk.Box {
+[GtkTemplate (ui = "/com/absolking/Codex/notebook_preview.ui")]
+public class Codex.NotebookPreview : Gtk.Box {
 
 	[GtkChild] private unowned Gtk.Label label;
 	[GtkChild] private unowned Gtk.Image icon;

@@ -4,7 +4,7 @@ Terminal=false
 Exec=@bindir@/@app_id@ --file %u
 NoDisplay=true
 
-Name=Folio
+Name=Codex
 
 Icon=@app_id@
 StartupNotify=true

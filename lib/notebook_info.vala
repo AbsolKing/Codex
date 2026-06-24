@@ -1,5 +1,5 @@
 
-public class Folio.NotebookInfo {
+public class Codex.NotebookInfo {
 
 	public string name;
 	public Gdk.RGBA color;

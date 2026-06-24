@@ -16,7 +16,7 @@ sp_sources = gnome.gdbus_codegen(
   'shell-search-provider-generated',
   sources: 'org.gnome.Shell.SearchProvider2.xml',
   interface_prefix : 'org.gnome.',
-  namespace : 'Folio',
+  namespace : 'Codex',
 )
 
 conf = configuration_data()

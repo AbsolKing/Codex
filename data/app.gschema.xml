@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="notebook">
-	<schema id="com.toolstack.Folio" path="/com/toolstack/Folio/">
+	<schema id="com.absolking.Codex" path="/com/absolking/Codex/">
     <key name="note-font" type="s">
       <default>''</default>
       <summary>Note Font</summary>
@@ -37,12 +37,12 @@
       <description>Expands the notebook list to include the notebook name</description>
     </key>
     <key name="notes-dir" type="s">
-      <default>'~/.var/app/com.toolstack.Folio/data'</default>
+      <default>'~/.var/app/com.absolking.Codex/data'</default>
       <summary>Notes Storage Location</summary>
       <description>Where the notebooks are stored (requires app restart)</description>
     </key>
     <key name="trash-dir" type="s">
-      <default>'~/.var/app/com.toolstack.Folio/data'</default>
+      <default>'~/.var/app/com.absolking.Codex/data'</default>
       <summary>Trash Storage Location</summary>
       <description>Where the trash folder is located (requires app restart)</description>
     </key>
@@ -107,19 +107,19 @@
       <description>Truncate, multi-line, or expand the note list column to the width of longest note name</description>
     </key>
   </schema>
-  <enum id="com.toolstack.Folio.ThemeVariantEnum">
+  <enum id="com.absolking.Codex.ThemeVariantEnum">
     <value nick="default" value="0"/>
     <value nick="force-light" value="1"/>
     <value nick="force-dark" value="2"/>
     <value nick="prefer-light" value="3"/>
     <value nick="prefer-dark" value="4"/>
   </enum>
-  <schema id="com.toolstack.Folio.Theme" path="/com/toolstack/Folio/Theme/">
-    <key name="variant" enum="com.toolstack.Folio.ThemeVariantEnum">
+  <schema id="com.absolking.Codex.Theme" path="/com/absolking/Codex/Theme/">
+    <key name="variant" enum="com.absolking.Codex.ThemeVariantEnum">
       <default>'default'</default>
     </key>
   </schema>
-  <schema id="com.toolstack.Folio.WindowState" path="/com/toolstack/Folio/WindowState/">
+  <schema id="com.absolking.Codex.WindowState" path="/com/absolking/Codex/WindowState/">
     <key name="width" type="i">
       <default>720</default>
     </key>

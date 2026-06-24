@@ -1,6 +1,6 @@
 
-[GtkTemplate (ui = "/com/toolstack/Folio/app_menu.ui")]
-public class Folio.AppMenu : Adw.Bin {
+[GtkTemplate (ui = "/com/absolking/Codex/app_menu.ui")]
+public class Codex.AppMenu : Adw.Bin {
 
 	[GtkChild] unowned Gtk.PopoverMenu popover;
 

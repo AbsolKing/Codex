@@ -1,6 +1,6 @@
 
-[GtkTemplate (ui = "/com/toolstack/Folio/edit_view.ui")]
-public class Folio.EditView : Gtk.Box {
+[GtkTemplate (ui = "/com/absolking/Codex/edit_view.ui")]
+public class Codex.EditView : Gtk.Box {
 
 	public bool toolbar_enabled { get; set; }
 
@@ -40,6 +40,7 @@ public class Folio.EditView : Gtk.Box {
 	private Gtk.GestureClick click_controller;
 	private Settings settings;
 	private Gtk.EventControllerScroll scroll_controller;
+	private Gtk.EventControllerKey key_controller;
 
 	construct {
 		settings = new Settings (Config.APP_ID);
@@ -83,6 +84,11 @@ public class Folio.EditView : Gtk.Box {
 		scroll_controller = new Gtk.EventControllerScroll (Gtk.EventControllerScrollFlags.DISCRETE | Gtk.EventControllerScrollFlags.VERTICAL);
 		scroll_controller.scroll.connect (on_scroll_controller_change);
 		markdown_view.add_controller (scroll_controller);
+		
+		key_controller = new Gtk.EventControllerKey ();
+		key_controller.set_propagation_phase (Gtk.PropagationPhase.CAPTURE);
+		key_controller.key_pressed.connect (on_key_pressed);
+		markdown_view.add_controller (key_controller);
 	}
 
 	private void on_is_editable_changed () {
@@ -170,8 +176,8 @@ public class Folio.EditView : Gtk.Box {
 					if (url_text.down ().substring (0, 7) == "file://" ) {
 						url_text = url_text.substring (7, -1);
 					}
-					var window = (Folio.Window)get_ancestor (typeof (Folio.Window));
-					var app = (Folio.Application)window.get_application ();
+					var window = (Codex.Window)get_ancestor (typeof (Codex.Window));
+					var app = (Codex.Application)window.get_application ();
 					var window_model = app.window_model;
 					// Is this a link to another note in the current notebook?
 					if ( ( url_text[0] == '.' && url_text[1] == '/' ) ) {
@@ -508,5 +514,52 @@ public class Folio.EditView : Gtk.Box {
 		markdown_view.buffer.get_start_iter (out start);
 		markdown_view.buffer.place_cursor (start);
 		markdown_view.grab_focus ();
+	}
+	
+	private bool on_key_pressed (uint keyval, uint keycode, Gdk.ModifierType state) {
+    	if (keyval != Gdk.Key.Return && keyval != Gdk.Key.KP_Enter)
+        	return false;
+    	if ((state & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.SHIFT_MASK | Gdk.ModifierType.ALT_MASK)) != 0)
+       		return false;
+    	if (!is_editable)
+        	return false;
+
+    	var buffer = markdown_view.buffer;
+    	Gtk.TextIter cur;
+    	buffer.get_iter_at_mark (out cur, buffer.get_insert ());
+
+    	var line_start = cur.copy ();
+    	line_start.set_line_offset (0);
+    	var line_text = buffer.get_text (line_start, cur, false);
+
+    	int ws = 0;
+    	while (ws < line_text.length && (line_text[ws] == ' ' || line_text[ws] == '\t'))
+        	ws++;
+
+    	if (ws + 2 > line_text.length)
+        	return false;
+
+    	uint8 m = line_text[ws];
+    	if ((m != '-' && m != '*' && m != '+') || line_text[ws + 1] != ' ')
+        	return false;
+
+    	string indent = line_text.substring (0, ws);
+    	string prefix = indent + ((char)m).to_string () + " ";
+    	string content = line_text.substring (prefix.length);
+
+    	buffer.begin_user_action ();
+
+    if (content.strip () == "") {
+    		var ls = line_start.copy ();
+    		buffer.delete (ref ls, ref cur);
+    		buffer.place_cursor (ls);
+	} else {
+        	string ins = "\n" + prefix;
+        	buffer.insert (ref cur, ins, (int)ins.length);
+        	buffer.place_cursor (cur);
+    	}
+
+    	buffer.end_user_action ();
+    	return true;
 	}
 }

@@ -1,6 +1,6 @@
 
-[GtkTemplate (ui = "/com/toolstack/Folio/theme_selector.ui")]
-public class Folio.ThemeSelector : Gtk.Box {
+[GtkTemplate (ui = "/com/absolking/Codex/theme_selector.ui")]
+public class Codex.ThemeSelector : Gtk.Box {
 
 	[GtkChild] unowned Gtk.CheckButton _auto;
 	[GtkChild] unowned Gtk.CheckButton light;

@@ -1,6 +1,6 @@
 using Gee;
 
-public interface Folio.NoteContainer : Object, ListModel {
+public interface Codex.NoteContainer : Object, ListModel {
 
 	public abstract string name { get; }
 
@@ -10,7 +10,7 @@ public interface Folio.NoteContainer : Object, ListModel {
 	public abstract void unload ();
 }
 
-public class Folio.SimpleNoteContainer : Object, ListModel, NoteContainer {
+public class Codex.SimpleNoteContainer : Object, ListModel, NoteContainer {
 
 	public string name { get { return _name; } }
 

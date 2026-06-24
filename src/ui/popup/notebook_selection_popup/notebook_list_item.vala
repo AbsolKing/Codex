@@ -1,6 +1,6 @@
 
-[GtkTemplate (ui = "/com/toolstack/Folio/popup/notebook_list_item.ui")]
-public class Folio.NotebookListItem : Gtk.Box {
+[GtkTemplate (ui = "/com/absolking/Codex/popup/notebook_list_item.ui")]
+public class Codex.NotebookListItem : Gtk.Box {
 
 	[GtkChild]
 	unowned NotebookPreview icon;

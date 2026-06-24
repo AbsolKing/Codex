@@ -1,5 +1,5 @@
 
-public class Folio.Note : Object {
+public class Codex.Note : Object {
 
 	public string name {
 		get { return _name; }

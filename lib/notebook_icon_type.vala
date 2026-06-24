@@ -1,5 +1,5 @@
 
-public enum Folio.NotebookIconType {
+public enum Codex.NotebookIconType {
 	FIRST,
 	INITIALS,
 	INITIALS_CAMEL_CASE,

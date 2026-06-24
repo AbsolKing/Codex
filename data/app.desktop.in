@@ -5,7 +5,7 @@ Exec=@bindir@/@app_id@
 DBusActivatable=true
 StartupWMClass=@app_id@
 
-Name=Folio
+Name=Codex
 GenericName=Notes Manager
 Comment=Take notes
 
