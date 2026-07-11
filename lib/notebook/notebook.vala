@@ -9,6 +9,18 @@ public interface Codex.Notebook : Object, ListModel, NoteContainer {
 
 	public abstract string path { owned get; }
 
+	/**
+	 * Path relative to the notes root (e.g. "Work/ProjectX").
+	 * For a top-level notebook this is identical to `name`.
+	 */
+	public abstract string relative_path { owned get; }
+
+	/**
+	 * Immediate child notebooks (subfolders). Empty list for leaf notebooks
+	 * or containers that don't support nesting (e.g. Trash).
+	 */
+	public abstract Gee.List<Notebook> get_child_notebooks ();
+
 	public abstract Note new_note (string name, string extension = "md") throws ProviderError;
 	public abstract void change_note (Note note, string name, string extension = note.extension) throws ProviderError;
 	public abstract void delete_note (Note note) throws ProviderError;
@@ -16,6 +28,6 @@ public interface Codex.Notebook : Object, ListModel, NoteContainer {
 	public abstract void sort_notes (int note_sort_order);
 
 	public bool equals (Notebook other) {
-		return this.name == other.name;
+		return this.relative_path == other.relative_path;
 	}
 }

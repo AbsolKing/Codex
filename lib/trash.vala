@@ -26,6 +26,8 @@ public class Codex.Trash : Object, ListModel, NoteContainer {
 
 	private bool disable_hidden_trash;
 
+	private const string NOTEBOOK_PATH_SEPARATOR = " · ";
+
 	construct {
 		var settings = new Settings (Config.APP_ID);
 		disable_hidden_trash = settings.get_boolean ("disable-hidden-trash");
@@ -34,6 +36,23 @@ public class Codex.Trash : Object, ListModel, NoteContainer {
 	public Trash (Provider provider, string name) {
 		this.provider = provider;
 		this._name = name;
+	}
+
+	/**
+	 * Encodes a nested notebook relative_path (e.g. "Work/ProjectX") into a
+	 * single flat trash-folder-safe segment (e.g. "Work · ProjectX"), since
+	 * Trash itself does not support nested folders.
+	 */
+	public static string encode_notebook_path (string relative_path) {
+		return relative_path.replace ("/", NOTEBOOK_PATH_SEPARATOR);
+	}
+
+	/**
+	 * Reverses encode_notebook_path(), reconstructing the original nested
+	 * relative_path from a flat trash folder name.
+	 */
+	public static string decode_notebook_path (string encoded) {
+		return encoded.replace (NOTEBOOK_PATH_SEPARATOR, "/");
 	}
 
 	public void load () {
@@ -139,7 +158,7 @@ public class Codex.Trash : Object, ListModel, NoteContainer {
 		if (!file.query_exists ()) {
 			throw new ProviderError.COULDNT_MOVE (@"Couldn't restore note at $path");
 		}
-		var restore_dir_path = @"$(provider.notes_dir)/$(note.notebook.name)";
+		var restore_dir_path = @"$(provider.notes_dir)/$(decode_notebook_path (note.notebook.name))";
 		var restore_path = @"$restore_dir_path/$(note.file_name)";
 		var restore_file = File.new_for_path (restore_path);
 		if (restore_file.query_exists ()) {

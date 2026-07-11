@@ -1,4 +1,3 @@
-
 public class Codex.WindowModel : Object {
 
 	public signal void state_changed (State state, NoteContainer? container, bool is_clicked = false);
@@ -34,7 +33,6 @@ public class Codex.WindowModel : Object {
 
 	private SimpleNoteContainer all_notes;
 	private Window window;
-	private string search_for_notebook;
 	private string search_for_note;
 
 	construct {
@@ -151,22 +149,50 @@ public class Codex.WindowModel : Object {
 		else notebooks_model.select_item (i, true);
 	}
 
+	/**
+	 * Locates the row position for the notebook with the given relative_path
+	 * inside the (currently expanded/collapsed) tree-backed notebooks_model,
+	 * expanding ancestor rows along the way as needed. Returns -1 if not found.
+	 */
+	private int locate_notebook_row (string target_relative_path) {
+		uint n = notebooks_model.get_n_items ();
+		for (uint i = 0; i < n; i++) {
+			var row = notebooks_model.get_item (i) as Gtk.TreeListRow;
+			if (row == null) continue;
+			var nb = row.get_item () as Notebook;
+			if (nb == null) continue;
+			if (nb.relative_path == target_relative_path) {
+				return (int) i;
+			}
+			if (!row.get_expanded () && target_relative_path.has_prefix (nb.relative_path + "/")) {
+				row.set_expanded (true);
+				// Expanding inserts the children immediately after this row; refresh the count
+				// so the loop continues into them.
+				n = notebooks_model.get_n_items ();
+			}
+		}
+		return -1;
+	}
+
+	private Notebook? find_notebook_by_relative_path (Gee.List<Notebook> notebooks, string target) {
+		foreach (var nb in notebooks) {
+			if (nb.relative_path == target) return nb;
+			if (target.has_prefix (nb.relative_path + "/")) {
+				var found = find_notebook_by_relative_path (nb.get_child_notebooks (), target);
+				if (found != null) return found;
+			}
+		}
+		return null;
+	}
+
 	public void select_notebook (Notebook? notebook_to_select) requires (notebooks_model != null) {
 		if (notebook_to_select == null) {
 			select_notebook_at (-1);
 			return;
 		}
 
-		this.search_for_notebook = notebook_to_select.name;
-
-		var n = notebook_provider.notebooks
-			.first_match (match_notebook_name);
-		int i = notebook_provider.notebooks.index_of (n);
-		select_notebook_at (i);
-	}
-
-	private bool match_notebook_name (Notebook it) {
-		return it.name == this.search_for_notebook;
+		var i = locate_notebook_row (notebook_to_select.relative_path);
+		select_notebook_at ((uint) i);
 	}
 
 	public void select_note (Note? note_to_select)
@@ -442,15 +468,16 @@ public class Codex.WindowModel : Object {
 		if (path.length == 0)
 			return null;
 		var note_data = path.split ("/");
-		if (note_data.length != 2)
+		if (note_data.length < 2)
 			return null;
-		search_for_notebook = note_data[0];
-		var notebook = notebook_provider.notebooks
-			.first_match (match_notebook_name);
+		var note_name = note_data[note_data.length - 1];
+		var notebook_relative_path = string.joinv ("/", note_data[0:note_data.length - 1]);
+
+		var notebook = find_notebook_by_relative_path (notebook_provider.notebooks, notebook_relative_path);
 		if (notebook == null)
 			return null;
 		notebook.load ();
-		search_for_note = note_data[1];
+		search_for_note = note_name;
 		return notebook.loaded_notes
 			.first_match (match_note_name);
 	}
@@ -474,8 +501,21 @@ public class Codex.WindowModel : Object {
 		search_sorter.target = query;
 	}
 
+	private ListModel? create_notebook_child_model (Object item) {
+		var notebook = item as Notebook;
+		if (notebook == null) return null;
+		var children = notebook.get_child_notebooks ();
+		if (children.size == 0) return null;
+		var store = new GLib.ListStore (typeof (Notebook));
+		foreach (var child in children) {
+			store.append (child);
+		}
+		return store;
+	}
+
 	public void update_notebooks () {
-		var model = new Gtk.SingleSelection (notebook_provider);
+		var tree_model = new Gtk.TreeListModel (notebook_provider, false, false, create_notebook_child_model);
+		var model = new Gtk.SingleSelection (tree_model);
 		model.can_unselect = true;
 		model.autoselect = false;
 		model.selection_changed.connect (on_notebook_model_selection_changed);
@@ -485,9 +525,12 @@ public class Codex.WindowModel : Object {
 
 	private void on_notebook_model_selection_changed () {
 		var i = notebooks_model.selected;
-		var notebooks = notebook_provider.notebooks;
-		if (i <= notebooks.size && i != -1) {
-			set_notebook (notebooks[(int) i]);
+		if (i == -1) return;
+		var row = notebooks_model.selected_item as Gtk.TreeListRow;
+		if (row == null) return;
+		var notebook = row.get_item () as Notebook;
+		if (notebook != null) {
+			set_notebook (notebook);
 		}
 	}
 }

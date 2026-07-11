@@ -6,7 +6,13 @@ public class Codex.LocalNotebook : Object, ListModel, NoteContainer, Notebook {
 	public string name { get { return info.name; } }
 
 	public string path {
-		owned get { return @"$(provider.notes_dir)/$name"; }
+		owned get { return _path; }
+	}
+
+	public string relative_path {
+		owned get {
+			return (_parent == null) ? info.name : @"$(_parent.relative_path)/$(info.name)";
+		}
 	}
 
 	public NotebookInfo info {
@@ -18,22 +24,74 @@ public class Codex.LocalNotebook : Object, ListModel, NoteContainer, Notebook {
 	}
 
 	ArrayList<Note>? _loaded_notes = null;
+	ArrayList<Notebook>? _children = null;
 
 	NotebookInfo _info;
 	Provider provider;
+	LocalNotebook? _parent;
+	string _path;
 
 	private bool disable_hidden_trash;
 	private int note_sort_order;
+
+	private Gdk.RGBA default_color = Gdk.RGBA ();
 
 	construct {
 		var settings = new Settings (Config.APP_ID);
 		disable_hidden_trash = settings.get_boolean ("disable-hidden-trash");
 		note_sort_order = settings.get_int ("note-sort-order");
+		default_color.parse ("#2ec27eff");
 	}
 
-	public LocalNotebook (Provider provider, NotebookInfo info) {
+	public LocalNotebook (Provider provider, NotebookInfo info, LocalNotebook? parent = null) {
 		this.provider = provider;
 		this._info = info;
+		this._parent = parent;
+		this._path = (parent == null)
+			? @"$(provider.notes_dir)/$(info.name)"
+			: @"$(parent.path)/$(info.name)";
+	}
+
+	/**
+	 * Immediate child notebooks (subfolders of this notebook). Lazily scanned
+	 * and cached; call invalidate_children() after a rename/move to force a
+	 * rescan on next access.
+	 */
+	public Gee.List<Notebook> get_child_notebooks () {
+		if (_children != null) return _children;
+
+		_children = new ArrayList<Notebook> ();
+		var dir = File.new_for_path (_path);
+
+		if (!dir.query_exists ()) return _children;
+
+		try {
+			var enumerator = dir.enumerate_children (FileAttribute.STANDARD_NAME + "," + FileAttribute.STANDARD_TYPE + "," + FileAttribute.TIME_MODIFIED + "," + FileAttribute.STANDARD_DISPLAY_NAME, 0);
+			FileInfo file_info;
+			while ((file_info = enumerator.next_file ()) != null) {
+				if (file_info.get_file_type () != FileType.DIRECTORY) continue;
+				var child_name = file_info.get_display_name ();
+				if (disable_hidden_trash && child_name == "Trash") continue;
+				if (child_name[0] == '.') continue;
+				if (child_name == ".trash" || child_name == "Trash") continue;
+				var time = file_info.get_modification_date_time ();
+				var child_path = @"$_path/$child_name";
+				_children.add (new LocalNotebook (
+					provider,
+					read_notebook_info (child_name, time, child_path),
+					this
+				));
+			}
+		} catch (Error err) {
+			stderr.printf ("Error: get_child_notebooks failed for %s: %s\n", _path, err.message);
+		}
+
+		return _children;
+	}
+
+	/** Clears the cached child list, forcing a rescan on next get_child_notebooks() call. */
+	public void invalidate_children () {
+		_children = null;
 	}
 
 	public void load () {
@@ -101,6 +159,9 @@ public class Codex.LocalNotebook : Object, ListModel, NoteContainer, Notebook {
 	public void change (Provider provider, NotebookInfo info) {
 		this.provider = provider;
 		this._info = info;
+		this._path = (_parent == null)
+			? @"$(provider.notes_dir)/$(info.name)"
+			: @"$(_parent.path)/$(info.name)";
 	}
 
 	public Note new_note (string name, string extension) throws ProviderError {
@@ -153,10 +214,11 @@ public class Codex.LocalNotebook : Object, ListModel, NoteContainer, Notebook {
 			throw new ProviderError.COULDNT_DELETE (@"Couldn't delete note at $path");
 		}
 		var trashed_dir_path = "";
+		var encoded_notebook_path = Trash.encode_notebook_path (note.notebook.relative_path);
 		if (disable_hidden_trash) {
-			trashed_dir_path = @"$(provider.trash_dir)/Trash/$(note.notebook.name)";
+			trashed_dir_path = @"$(provider.trash_dir)/Trash/$encoded_notebook_path";
 		} else {
-			trashed_dir_path = @"$(provider.trash_dir)/.trash/$(note.notebook.name)";
+			trashed_dir_path = @"$(provider.trash_dir)/.trash/$encoded_notebook_path";
 		}
 		var trashed_path = @"$trashed_dir_path/$(note.file_name)";
 		try {
@@ -199,5 +261,51 @@ public class Codex.LocalNotebook : Object, ListModel, NoteContainer, Notebook {
 		if (_loaded_notes == null)
 			error (@"Notebook \"$name\": Notes haven't loaded yet");
 		return (i >= _loaded_notes.size) ? null : _loaded_notes.@get((int) i);
+	}
+
+	private NotebookInfo read_notebook_info (string name, DateTime time_modified, string notebook_path) {
+		return new NotebookInfo (
+			name,
+			read_color (notebook_path),
+			read_icon_type (notebook_path),
+			read_data_file (notebook_path, "icon_name"),
+			time_modified,
+			read_data_file (notebook_path, "custom_icon_label")
+		);
+	}
+
+	private Gdk.RGBA read_color (string notebook_path) {
+		var data = read_data_file (notebook_path, "color");
+		if (data == null) {
+			return default_color;
+		}
+		var rgba = Gdk.RGBA ();
+		if (!rgba.parse (data.strip ())) {
+			return default_color;
+		}
+		return rgba;
+	}
+
+	private NotebookIconType read_icon_type (string notebook_path) {
+		var data = read_data_file (notebook_path, "icon_type");
+		if (data == null) {
+			return NotebookIconType.DEFAULT;
+		}
+		return NotebookIconType.from_string (data);
+	}
+
+	private string? read_data_file (string notebook_path, string data_name) {
+		var path = @"$notebook_path/.config/$data_name";
+		var f = File.new_for_path (path);
+		if (!f.query_exists ())
+			return null;
+		try {
+			string etag_out;
+			uint8[] text_data = {};
+			f.load_contents (null, out text_data, out etag_out);
+			return (string) text_data;
+		} catch (Error e) {
+			return null;
+		}
 	}
 }

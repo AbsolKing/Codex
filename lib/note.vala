@@ -1,4 +1,3 @@
-
 public class Codex.Note : Object {
 
 	public string name {
@@ -34,7 +33,7 @@ public class Codex.Note : Object {
 	}
 
 	public string id {
-		owned get { return @"$(_notebook.name)/$name"; }
+		owned get { return @"$(_notebook.relative_path)/$name"; }
 	}
 
 	private string _name;

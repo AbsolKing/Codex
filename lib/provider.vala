@@ -14,13 +14,20 @@ public class Codex.Provider : Object, ListModel {
 	public Gee.List<Note> get_all_notes () {
 		var notes = new ArrayList<Note> ();
 		foreach (var notebook in notebooks) {
-			notebook.load ();
-			foreach (var note in notebook.loaded_notes) {
-				notes.add (note);
-			}
-			// notebook.unload ();
+			collect_notes_recursive (notebook, notes);
 		}
 		return notes;
+	}
+
+	private void collect_notes_recursive (Notebook notebook, Gee.List<Note> notes) {
+		notebook.load ();
+		foreach (var note in notebook.loaded_notes) {
+			notes.add (note);
+		}
+		foreach (var child in notebook.get_child_notebooks ()) {
+			collect_notes_recursive (child, notes);
+		}
+		// notebook.unload ();
 	}
 
 	public Gee.List<Notebook> notebooks {
@@ -125,10 +132,11 @@ public class Codex.Provider : Object, ListModel {
 
 		// Setup the path to the new trashed notebook.
 		var trashed_nb_path = "";
+		var encoded_notebook_path = Trash.encode_notebook_path (notebook.relative_path);
 		if (disable_hidden_trash) {
-			trashed_nb_path = @"$(this.trash_dir)/Trash/$(notebook.name)";
+			trashed_nb_path = @"$(this.trash_dir)/Trash/$encoded_notebook_path";
 		} else {
-			trashed_nb_path = @"$(this.trash_dir)/.trash/$(notebook.name)";
+			trashed_nb_path = @"$(this.trash_dir)/.trash/$encoded_notebook_path";
 		}
 		FileInfo file_info;
 		var trash_dir = File.new_for_path (trashed_nb_path);

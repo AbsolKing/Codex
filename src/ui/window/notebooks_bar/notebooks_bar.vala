@@ -1,4 +1,3 @@
-
 [GtkTemplate (ui = "/com/absolking/Codex/notebooks_bar.ui")]
 public class Codex.NotebooksBar : Gtk.Box {
 
@@ -84,32 +83,41 @@ public class Codex.NotebooksBar : Gtk.Box {
 		on_notebooks_updated ();
 	}
 
-
 	private void on_item_factory_setup_change (Object object) {
 		var list_item = object as Gtk.ListItem;
 		var widget = new NotebookIcon (window);
-		list_item.child = widget;
+		var expander = new Gtk.TreeExpander ();
+		expander.child = widget;
+		list_item.child = expander;
 	}
 
 	private void on_item_factory_bind_change (Object object) {
 		var list_item = object as Gtk.ListItem;
-		var widget = list_item.child as NotebookIcon;
-		var item = list_item.item as Notebook;
+		var expander = list_item.child as Gtk.TreeExpander;
+		var row = list_item.item as Gtk.TreeListRow;
+		expander.list_row = row;
+		var widget = expander.child as NotebookIcon;
+		var item = row.get_item () as Notebook;
 		widget.notebook = item;
 	}
 
 	private void on_paned_factory_setup_change (Object object) {
 		var widget = new NotebookSidebarItem (window);
+		var expander = new Gtk.TreeExpander ();
+		expander.child = widget;
 		var li = object as Gtk.ListItem;
 		if (li != null) {
-			li.child = widget;
+			li.child = expander;
 		}
 	}
 
 	private void on_paned_factory_bind_change (Object object) {
 		var list_item = object as Gtk.ListItem;
-		var widget = list_item.child as NotebookSidebarItem;
-		var item = list_item.item as Notebook;
+		var expander = list_item.child as Gtk.TreeExpander;
+		var row = list_item.item as Gtk.TreeListRow;
+		expander.list_row = row;
+		var widget = expander.child as NotebookSidebarItem;
+		var item = row.get_item () as Notebook;
 		widget.notebook = item;
 	}
 
@@ -140,8 +148,7 @@ public class Codex.NotebooksBar : Gtk.Box {
 
 	private void on_notebooks_model_selection_changed () {
 		var i = window_model.notebooks_model.selected;
-		var notebooks = window_model.notebook_provider.notebooks;
-		if (i <= notebooks.size && i != -1) {
+		if (i != -1) {
 			trash_button.active = false;
 			all_button.active = false;
 		}

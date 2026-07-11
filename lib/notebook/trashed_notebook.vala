@@ -8,6 +8,10 @@ public class Codex.TrashedNotebook : Object, ListModel, NoteContainer, Notebook 
 		owned get { return @"$(trash.path)/$name"; }
 	}
 
+	public string relative_path {
+		owned get { return name; }
+	}
+
 	public NotebookInfo info {
 		get { return _info; }
 	}
@@ -28,6 +32,11 @@ public class Codex.TrashedNotebook : Object, ListModel, NoteContainer, Notebook 
 	public void unload () {}
 
 	public void sort_notes (int note_sort_order) {}
+
+	/** Trash does not support nested notebooks; always empty. */
+	public Gee.List<Notebook> get_child_notebooks () {
+		return new ArrayList<Notebook> ();
+	}
 
 	public Note new_note (string name, string extension) throws ProviderError {
 		error ("Can't create notes in trash");

@@ -1,4 +1,3 @@
-
 [DBus (name = "org.gnome.Shell.SearchProvider2")]
 public class SearchProvider : Object {
 
@@ -40,13 +39,17 @@ public class SearchProvider : Object {
 	}
 
 	public void update_notes () throws Error {
-		var notebooks = notebook_provider.notebooks;
 		notes = new HashTable<string, Codex.Note> (str_hash, str_equal);
+		collect_notes_recursive (notebook_provider.notebooks);
+	}
+
+	private void collect_notes_recursive (Gee.List<Codex.Notebook> notebooks) {
 		foreach (var notebook in notebooks) {
 			notebook.load ();
 			foreach (var note in notebook.loaded_notes) {
-				notes.insert(note.id, note);
+				notes.insert (note.id, note);
 			}
+			collect_notes_recursive (notebook.get_child_notebooks ());
 			notebook.unload ();
 		}
 	}
@@ -60,7 +63,8 @@ public class SearchProvider : Object {
 		var results = new Gee.ArrayList<string> ();
 		new Gee.ArrayList<string>.wrap (notes.get_keys_as_array ())
 			.map<ResultWithDistance?> (x => {
-				var name = x.split("/")[1].down ().normalize ();
+				var parts = x.split ("/");
+				var name = parts[parts.length - 1].down ().normalize ();
 				var query = string.joinv (" ", terms).down ().normalize ();
 				var xd = Util.search_distance (name, query);
 				return ResultWithDistance (x, xd);
